@@ -3,10 +3,10 @@
 `fastdeb` CLI tool is intended for fast creation of `.deb` packages for Ubuntu and 
 other Debian-based operating systems. 
 ## Installation
-First, clone this repo.
+First, download fastdeb `.deb` package from [Releases](https://github.com/osintegrator/fastdeb/releases) page.
 Then you can install `fastdeb` with this command:
 ```bash
-sudo apt install -y ./fastdeb_<version>.deb
+sudo apt install -y /path/to/fastdeb_<version>.deb
 ``` 
 ## Usage
 There are 5 mandatory parameters for fastdeb: 
