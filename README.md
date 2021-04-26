@@ -48,4 +48,5 @@ fastdeb_1.0.1.deb
 ```
 
 The resulting `.deb` file will be placed in directory from which `fastdeb` command was called.
-If I call it say from `/home/username` directory, it will be placed on path: `/home/username/fastdeb_1.0.1.deb`
+If I call `fastdeb` from, say, a `/home/username` directory, the resulting `.deb` package will be placed on path: 
+`/home/username/fastdeb_1.0.1.deb`
