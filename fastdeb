@@ -1,0 +1,84 @@
+#!/usr/bin/python3
+
+import argparse
+import tempfile
+import pathlib
+import os
+import shutil
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)-8s %(asctime)-8s %(message)s')
+
+
+def make_deb_tree(tmp_dir_name, name, version, path):
+    package_dir = tmp_dir_name + '/' + name + '_' + version + '/'
+    nested_trees = ['DEBIAN', 'usr/bin/']
+    for nested_tree in nested_trees:
+        try:
+            os.makedirs(package_dir + nested_tree)
+        except OSError:
+            logging.error(f"Creation of the directory {package_dir + nested_tree} failed")
+        else:
+            logging.info(f"Successfully created the directory {package_dir + nested_tree}")
+    return package_dir
+
+
+def create_control_file(deb_package_dir, args):
+    control_file_path = deb_package_dir + 'DEBIAN/control'
+    with open(control_file_path, 'w') as f:
+        f.write(f'Package: {args.name}\n')
+        f.write(f'Version: {args.version}\n')
+        f.write(f'Maintainer: {args.maintainer}\n')
+        f.write(f'Description: {args.description}\n')
+        f.write(f'Architecture: {args.architecture}\n')
+    logging.info(f"Control file was successfully created at {control_file_path}!")
+
+
+def make_deb(args):
+    with tempfile.TemporaryDirectory() as tmp_dir_name:
+        deb_package_dir = make_deb_tree(tmp_dir_name, args.name, args.version, args.path)
+        create_control_file(deb_package_dir, args)
+        binary_dir = deb_package_dir + 'usr/bin/'
+        shutil.copy(args.path, binary_dir)
+        logging.info(f'Binary file {args.path} was successfully copied to {binary_dir}!')
+        os.system(f'dpkg -b {deb_package_dir}')
+        deb_package_full_name = f'{args.name}_{args.version}.deb'
+        os.rename(tmp_dir_name + '/' + deb_package_full_name, deb_package_full_name)
+        logging.info(f'Deb package {deb_package_full_name}.deb was successfully created!!!')
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Arguments for fastdeb.')
+
+    parser.add_argument('-p', '--path', dest='path', type=pathlib.Path,
+                        help='Path to executable file', required=True)
+
+    parser.add_argument('-n', '--name', dest='name',
+                        help='Name of deb package', required=True)
+
+    parser.add_argument('-v', '--version', dest='version',
+                        help='Version of deb package', required=True)
+
+    parser.add_argument('-m', '--maintainer', dest='maintainer',
+                        help='email of maintainer of deb package', required=True)
+
+    parser.add_argument('-d', '--description', dest='description',
+                        help='Description of deb package', required=True)
+
+    parser.add_argument('-a', '--architecture', dest='architecture',
+                        help='Architecture of deb package. Default: %(default)s', default='all')
+
+    args = parser.parse_args()
+    return args
+
+
+def main():
+    args = parse_args()
+    make_deb(args)
+
+
+if __name__ == '__main__':
+    main()
+
+
+
