@@ -46,3 +46,6 @@ In case of abovementioned commnad:
 ```
 fastdeb_1.0.1.deb
 ```
+
+The resulting `.deb` file will be placed in directory from which `fastdeb` command was called.
+If I call it say from `/home/username` directory, it will be placed on path: `/home/username/fastdeb_1.0.1.deb`
